@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Server } from 'socket.io';
 import chalk from 'chalk';
+import { log } from 'console';
 
 // Initialize express app
 const app = express();
@@ -41,5 +42,8 @@ io.on("connection", function(socket) {
 });
 
 server.listen(3000, function() {
-    console.log(chalk.blue('Server is running on port 3000'));
+    console.clear();
+    console.log(chalk.bgBlueBright.black('Server is running on port 3000'));
+    console.log();
+    console.log(chalk.bgBlackBright.whiteBright("No You Can View"));
 });
