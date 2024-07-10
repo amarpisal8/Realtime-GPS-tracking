@@ -1,15 +1,23 @@
-// package declaration
-const express = require("express");
+// Package imports
+import express from 'express';
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { Server } from 'socket.io';
+import chalk from 'chalk';
+
+// Initialize express app
 const app = express();
-const http = require("http");
-const path = require("path");
-const socketio = require("socket.io");
 
-// make server
+// Get __dirname equivalent in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create server
 const server = http.createServer(app);
-const io = socketio(server);
+const io = new Server(server);
 
-// Set the view engine to ejs
+// Set the view engine to EJS
 app.set("view engine", "ejs");
 
 // Serve static files from the "public" directory
@@ -20,17 +28,18 @@ app.get("/", function(req, res) {
 });
 
 io.on("connection", function(socket) {
-    socket.on("send-location" , function(data){
-        io.emit("receive-location" , {id : socket.id , ...data})
-    });
-    socket.on("disconnect" , ()=>{
-        io.emit("user-disconnected" , socket.id)
-    })
+    console.log(chalk.green("A user connected: " + socket.id));
 
-    console.log("Connected");
+    socket.on("send-location", function(data) {
+        io.emit("receive-location", { id: socket.id, ...data });
+    });
+
+    socket.on("disconnect", function() {
+        io.emit("user-disconnected", socket.id);
+        console.log(chalk.red("A user disconnected: " + socket.id));
+    });
 });
 
 server.listen(3000, function() {
-    console.log('Server is running on port 3000');
+    console.log(chalk.blue('Server is running on port 3000'));
 });
-
